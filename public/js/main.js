@@ -2,7 +2,7 @@
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = id => document.getElementById(id);
-  const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
 
   /* ---- header ---- */
   const hdr = $('top');
@@ -12,17 +12,27 @@
   /* ---- hero video: легший файл на телефоні, без автоплею при reduced motion ---- */
   const hv = $('heroVideo');
   if (hv && !reduce) {
-    hv.src = 'media/' + (innerWidth < 900 ? 'hero-540.mp4' : 'hero.mp4');
+    const lite = navigator.connection && navigator.connection.saveData;
+    hv.src = 'media/' + (lite ? 'hero-540.mp4' : 'hero.mp4');
     hv.addEventListener('playing', () => hv.classList.add('on'), { once: true });
     hv.addEventListener('canplay', () => hv.play().catch(() => {}), { once: true });
     hv.load();
   }
 
+  /* ---- старт: hero «наїжджає» ---- */
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('ready')));
+
+  /* ---- заголовки секцій: рядок з-під маски ---- */
+  document.querySelectorAll('h2.rv').forEach(h => {
+    h.classList.remove('rv'); h.classList.add('mask');
+    h.innerHTML = `<span class="ln"><span>${h.innerHTML}</span></span>`;
+  });
+
   /* ---- поява блоків ---- */
   const io = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
   }), { threshold: .12 });
-  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+  document.querySelectorAll('.rv,.mask,.wordmark').forEach(el => io.observe(el));
 
   /* ---- моделі й оплата ----
      Ставки — приклад з payments.md, замінити на реальні з кабінетів мерчанта клієнта. */
@@ -81,7 +91,8 @@
     $('tabs').querySelectorAll('button').forEach(x => x.setAttribute('aria-selected', x === b));
     $('panel').setAttribute('aria-labelledby', b.id);
     cur = key; const m = M[key], img = $('bike');
-    img.style.opacity = 0; img.style.transform = 'translateX(-24px)'; $('ghost').style.opacity = 0;
+    const SH = 'drop-shadow(0 34px 28px rgba(0,0,0,.55))';
+    img.style.opacity = 0; img.style.transform = 'translateX(-50px)'; img.style.filter = `blur(6px) ${SH}`; $('ghost').style.opacity = 0;
     document.querySelectorAll('.hs').forEach(x => x.setAttribute('aria-expanded', 'false'));
     setTimeout(() => {
       img.src = `img/${m.img}.webp`; img.width = m.w; img.height = m.h; img.alt = `Sur-Ron ${m.n} ${m.y}, вигляд збоку`.replace('  ', ' ');
@@ -91,8 +102,9 @@
       $('status').innerHTML = m.stock ? '<span class="dot"></span>В наявності у Києві' : '<span class="dot off"></span>Під замовлення';
       ['d1', 'd2', 'd3', 'd4'].forEach((id, i) => $(id).textContent = m.d[i]);
       ['hs1', 'hs2', 'hs3'].forEach((id, i) => $(id).textContent = m.hs[i]);
-      img.style.transition = 'none'; img.style.transform = 'translateX(24px)'; img.offsetWidth; img.style.transition = '';
-      img.style.opacity = 1; img.style.transform = 'none'; $('ghost').style.opacity = 1;
+      img.style.transition = 'none'; img.style.transform = 'translateX(70px)'; img.style.filter = `blur(8px) ${SH}`; img.offsetWidth; img.style.transition = '';
+      img.style.opacity = 1; img.style.transform = 'none'; img.style.filter = SH; $('ghost').style.opacity = 1;
+      $('cap').textContent = 'Натисніть на точку — покажемо деталь'; $('cap').classList.remove('on');
       shown = 0; render(false);
     }, reduce ? 0 : 300);
   }
@@ -110,6 +122,8 @@
     const open = h.getAttribute('aria-expanded') !== 'true';
     document.querySelectorAll('.hs').forEach(x => x.setAttribute('aria-expanded', 'false'));
     h.setAttribute('aria-expanded', open);
+    $('cap').textContent = open ? h.querySelector('span').textContent : 'Натисніть на точку — покажемо деталь';
+    $('cap').classList.toggle('on', open);
   }));
   render(false);
 
@@ -128,7 +142,7 @@
     });
     new IntersectionObserver(es => es.forEach(e => {
       if (e.isIntersecting) load();
-    }), { rootMargin: '100% 0px' }).observe(sc);
+    }), { rootMargin: '150% 0px' }).observe(sc);
     new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; playActive(); })).observe(sc);
     const update = () => {
       ticking = false;
@@ -154,6 +168,21 @@
     }), { rootMargin: '200px 0px' }).observe(v);
   });
 
+  /* ---- плавний скрол на ноутбуці (Lenis) ---- */
+  let lenis = null;
+  if (window.Lenis && !reduce && matchMedia('(pointer: fine)').matches) {
+    document.documentElement.style.scrollBehavior = 'auto';
+    lenis = new Lenis({ lerp: .09, wheelMultiplier: 1 });
+    const loop = t => { lenis.raf(t); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href^="#"]'); if (!a) return;
+      const id = a.getAttribute('href'); if (id.length < 2) { e.preventDefault(); lenis.scrollTo(0); return; }
+      const t = document.querySelector(id); if (!t) return;
+      e.preventDefault(); lenis.scrollTo(t, { duration: 1.4 });
+    });
+  }
+
   /* ---- форма заявки ---- */
   const sheet = $('sheet'), form = $('leadForm');
   function summary() {
@@ -169,13 +198,14 @@
     reqType = test ? 'Тест-драйв' : 'Покупка';
     $('sheetTitle').textContent = test ? 'Запис на тест-драйв' : 'Заявка на байк';
     $('oName').textContent = test ? `Тест-драйв: ${s.name}` : s.name;
-    if (test) $('oPay').textContent = 'Київ, вул. Старонаводницька, 4';
+    if (test) $('oPay').textContent = 'Київ, вул. Старонаводницька,\u00a04';
     else $('oPay').innerHTML = s.pay.replace(/([\d ]+ ₴)$/, '<em>$1</em>');
     $('eSend').textContent = '';
     $('oImg').src = `img/${s.img}.webp`; $('oImg').width = s.w; $('oImg').height = s.h;
-    sheet.classList.remove('sent'); sheet.showModal();
+    sheet.classList.remove('sent'); sheet.showModal(); lenis && lenis.stop();
   }));
   const close = () => sheet.close();
+  sheet.addEventListener('close', () => lenis && lenis.start());
   $('sheetClose').addEventListener('click', close);
   $('sheetDone').addEventListener('click', close);
   sheet.addEventListener('click', e => { if (e.target === sheet) close(); });

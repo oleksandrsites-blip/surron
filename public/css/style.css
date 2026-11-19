@@ -263,7 +263,7 @@ button{background:none;border:0;cursor:pointer}
 .final .actions{display:flex;flex-wrap:wrap;gap:12px}
 .contacts{display:grid;grid-template-columns:1fr 1fr;gap:18px 24px;padding-top:24px;margin-top:8px;border-top:1px solid var(--line)}
 .contacts dt{font-size:13px;color:var(--muted);margin-bottom:4px}
-.contacts dd{font-size:15px;overflow-wrap:anywhere}
+.contacts dd{font-size:15px;overflow-wrap:break-word}
 .contacts a{text-decoration:none;border-bottom:1px solid rgba(255,255,255,.25);transition:border-color .2s}
 .contacts a:hover{border-color:var(--text)}
 @media(min-width:900px){.contacts{grid-template-columns:repeat(4,auto);justify-content:start;gap:24px 40px}}
@@ -272,3 +272,55 @@ button{background:none;border:0;cursor:pointer}
 .foot a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
 .foot a:hover{color:var(--text)}
 #eSend{margin-top:12px}
+
+/* ================= ПОЛІРУВАННЯ ================= */
+/* Lenis */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
+
+/* маски: рядки виїжджають з-під краю */
+.mask .ln{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.mask .ln>span{display:block;transform:translateY(110%);transition:transform 1.15s var(--ease)}
+.mask .ln:nth-child(2)>span{transition-delay:.12s}
+.mask.in .ln>span{transform:none}
+.no-js .mask .ln>span{transform:none}
+.hero h1.mask .ln:first-child>span{transition-delay:.25s}
+.hero h1.mask .ln:nth-child(2)>span{transition-delay:.4s}
+.hero h1 b{display:inline}
+
+/* hero: відео плавно «наїжджає» */
+.hero .media{transform:scale(1.1);transition:transform 2.6s cubic-bezier(.16,.8,.24,1)}
+.ready .hero .media{transform:none}
+
+/* ціна в hero — лише телефон/планшет */
+.hero-price{display:grid;grid-template-columns:1fr auto auto;align-items:baseline;gap:2px 12px;padding:14px 0;border-top:1px solid rgba(255,255,255,.18);border-bottom:1px solid rgba(255,255,255,.18);text-decoration:none;max-width:32rem}
+.hero-price span{grid-column:1/-1;font-size:13px;color:rgba(242,242,238,.75)}
+.hero-price b{font:500 20px/1.2 var(--display);letter-spacing:-.03em}
+.hero-price small{font-size:14px;color:rgba(242,242,238,.8);justify-self:start}
+.hero-price svg{width:18px;height:18px;align-self:center;grid-row:2;grid-column:3}
+@media(min-width:1024px){.hero-price{display:none}}
+
+/* підписи точок на телефоні — у підписі сцени, щоб не вилазили за край */
+@media(max-width:699px){
+  .hs span{display:none}
+  .stage .cap{left:16px;right:16px;text-align:center;transition:color .3s}
+  .stage .cap.on{color:var(--text);font-size:15px}
+}
+
+/* байк заїжджає в кадр */
+.stage .frame{transform:translateX(70px);opacity:0;filter:blur(8px);transition:transform 1.3s var(--ease) .15s,opacity .9s .15s,filter 1.1s .15s}
+.stage.in .frame{transform:none;opacity:1;filter:none}
+.frame img{transition:opacity .35s,transform .8s var(--ease),filter .6s}
+
+/* величезний напис у футері */
+.foot{position:relative}
+.wordmark{flex-basis:100%;overflow:hidden;line-height:.78;margin:8px 0 6px;user-select:none}
+.wordmark span{display:block;font:600 clamp(64px,17.2vw,300px)/.8 var(--display);letter-spacing:-.06em;text-align:center;white-space:nowrap;
+  background:linear-gradient(180deg,rgba(242,242,238,.92) 0%,rgba(242,242,238,.06) 92%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  transform:translateY(40%);transition:transform 1.4s var(--ease)}
+.wordmark.in span{transform:none}
+@media(prefers-reduced-motion:reduce){.mask .ln>span,.stage .frame,.wordmark span{transform:none!important;opacity:1!important;filter:none!important}.hero .media{transform:none}}
+.d-b{display:block}
+@media(max-width:599px){.hero-in{gap:18px}.hero-l{gap:14px}.hero-price{padding:12px 0}}
+@media(max-width:599px){.contacts{grid-template-columns:1fr;gap:14px}}
