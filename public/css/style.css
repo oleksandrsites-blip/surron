@@ -214,8 +214,8 @@ button{background:none;border:0;cursor:pointer}
 
 /* ---------- 4. чому у нас ---------- */
 .why{display:grid;gap:clamp(28px,4vw,64px);padding-left:var(--pad);padding-right:var(--pad)}
-.why-img{border-radius:var(--r-lg);overflow:hidden;aspect-ratio:16/11}
-.why-img img{width:100%;height:100%;object-fit:cover;object-position:42% 55%}
+.why-img{border-radius:var(--r-lg);overflow:hidden;aspect-ratio:4/5}
+.why-img img{width:100%;height:100%;object-fit:cover;object-position:55% 45%}
 .why-in{display:grid;gap:clamp(24px,3vw,40px);align-content:center}
 .why h2{font:400 clamp(28px,3.4vw,52px)/1.08 var(--display);letter-spacing:-.045em}
 .why-list{border-top:1px solid var(--line)}
@@ -248,3 +248,6 @@ button{background:none;border:0;cursor:pointer}
 /* факти сцен не накладаються: старий гасне швидко, новий з'являється з паузою */
 .sc-list li{transition:opacity .3s,transform .5s var(--ease)}
 .sc-list li.on{transition:opacity .6s .25s,transform .8s .25s var(--ease)}
+/* фото «Чому у нас»: темний кут оригіналу ховаємо в градієнт */
+.why-img{position:relative}
+.why-img::after{content:"";position:absolute;inset:0;background:linear-gradient(200deg,rgba(20,20,20,.85) 0%,rgba(20,20,20,0) 38%);pointer-events:none}
