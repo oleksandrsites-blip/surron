@@ -6,7 +6,7 @@
   --ease:cubic-bezier(.2,.7,.2,1);
   --pad:clamp(16px,3.4vw,56px);
   --display:"Unbounded",system-ui,sans-serif;--body:"Onest",system-ui,sans-serif;
-  --r-lg:28px;--r-md:16px;
+  --r-lg:28px;--r-md:16px;--app-h:100vh;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--bg);scroll-behavior:smooth}
@@ -29,8 +29,8 @@ button{background:none;border:0;cursor:pointer}
 .btn svg{width:16px;height:16px;flex:none}
 
 /* ---------- header ---------- */
-.top{position:fixed;z-index:30;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px var(--pad);border-bottom:1px solid transparent;transition:background .35s,padding .35s,border-color .35s}
-.top.solid{background:rgba(20,20,20,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding-top:10px;padding-bottom:10px;border-color:var(--line)}
+.top{position:fixed;z-index:30;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px var(--pad);border-bottom:1px solid transparent;transition:background .35s,border-color .35s}
+.top.solid{background:rgba(20,20,20,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-color:var(--line)}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
 .logo b{font:600 15px/1 var(--display);letter-spacing:.06em}
 .logo span{font-size:12px;line-height:1.25;color:var(--muted);border-left:1px solid var(--line);padding-left:10px}
@@ -50,7 +50,7 @@ button{background:none;border:0;cursor:pointer}
 }
 
 /* ---------- hero ---------- */
-.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;isolation:isolate}
+.hero{position:relative;min-height:var(--app-h);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;isolation:isolate}
 .hero .media{position:absolute;inset:0;z-index:-3;overflow:hidden;background:#101010}
 .hero .media img,.hero .media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hero .media video{transform:scale(1.36);opacity:0;transition:opacity 1s} /* у ролику вшиті кіносмуги */
@@ -73,7 +73,7 @@ button{background:none;border:0;cursor:pointer}
 .teaser{display:none}
 @media(min-width:600px){.hero .actions{display:flex;flex-wrap:wrap}.hero .actions .btn-ghost{display:inline-flex}}
 @media(min-width:1024px){
-  .hero-in{grid-template-columns:1fr auto;align-items:end;padding-bottom:clamp(32px,5vh,56px)}
+  .hero-in{grid-template-columns:1fr auto;align-items:end;padding-bottom:44px}
   .hero-l{gap:22px}
   .teaser{display:grid;grid-template-columns:112px 1fr;gap:5px 18px;align-items:center;width:390px;padding:16px 24px 16px 14px;border:1px solid var(--line);border-radius:20px;background:rgba(20,20,20,.55);backdrop-filter:blur(16px);text-decoration:none;transition:border-color .3s,transform .4s var(--ease)}
   .teaser:hover{border-color:rgba(255,255,255,.35);transform:translateY(-3px)}
@@ -193,16 +193,16 @@ button{background:none;border:0;cursor:pointer}
 }
 
 /* ---------- 3. сцени ---------- */
-.scenes{position:relative;height:400svh}
-.sc-sticky{position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate;background:#101010}
+.scenes{position:relative;height:calc(var(--app-h) * 4)}
+.sc-sticky{position:sticky;top:0;height:var(--app-h);overflow:hidden;isolation:isolate;background:#101010}
 .sc-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.36);opacity:0;transition:opacity .9s var(--ease);z-index:-2}
 .sc-media video.on{opacity:1}
 .sc-sticky::after{content:"";position:absolute;inset:0;z-index:-1;
   background:linear-gradient(180deg,rgba(20,20,20,.7) 0%,rgba(20,20,20,0) 26%,rgba(20,20,20,0) 45%,rgba(20,20,20,.92) 100%),
              linear-gradient(90deg,rgba(20,20,20,.55) 0%,rgba(20,20,20,0) 60%)}
-.sc-in{position:absolute;inset:0;padding:96px var(--pad) clamp(28px,5vh,56px);display:grid;grid-template-rows:auto 1fr auto auto;gap:20px}
+.sc-in{position:absolute;inset:0;padding:96px var(--pad) 40px;display:grid;grid-template-rows:auto 1fr auto auto;gap:20px}
 .sc-title{font:400 clamp(24px,2.6vw,40px)/1.1 var(--display);letter-spacing:-.04em}
-.sc-list{list-style:none;position:relative;grid-row:3;min-height:clamp(200px,30vh,280px)}
+.sc-list{list-style:none;position:relative;grid-row:3;min-height:250px}
 .sc-list li{position:absolute;left:0;right:0;bottom:0;max-width:640px;opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease),transform .8s var(--ease);pointer-events:none}
 .sc-list li.on{opacity:1;transform:none;pointer-events:auto}
 .sc-list b{display:block;font:300 clamp(56px,9vw,150px)/.95 var(--display);letter-spacing:-.06em;white-space:nowrap}
@@ -253,7 +253,7 @@ button{background:none;border:0;cursor:pointer}
 .why-img::after{content:"";position:absolute;inset:0;background:linear-gradient(200deg,rgba(20,20,20,.85) 0%,rgba(20,20,20,0) 38%);pointer-events:none}
 
 /* ---------- 6. тест-драйв + контакти ---------- */
-.final{position:relative;overflow:hidden;isolation:isolate;min-height:clamp(620px,90svh,880px);display:flex;align-items:center;border-top:1px solid var(--line)}
+.final{position:relative;overflow:hidden;isolation:isolate;min-height:clamp(620px,calc(var(--app-h) * .9),880px);display:flex;align-items:center;border-top:1px solid var(--line)}
 .final video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.36);z-index:-2}
 .final::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(20,20,20,.94) 0%,rgba(20,20,20,.6) 55%,rgba(20,20,20,.3) 100%),linear-gradient(0deg,rgba(20,20,20,.8),transparent 40%)}
 .final-in{padding:clamp(72px,9vw,120px) var(--pad);display:grid;gap:26px;width:100%;max-width:860px}
@@ -324,3 +324,39 @@ html.lenis,html.lenis body{height:auto}
 .d-b{display:block}
 @media(max-width:599px){.hero-in{gap:18px}.hero-l{gap:14px}.hero-price{padding:12px 0}}
 @media(max-width:599px){.contacts{grid-template-columns:1fr;gap:14px}}
+
+@supports(height:100svh){:root{--app-h:100svh}}
+/* без «гумової» прокрутки, через яку в Telegram смикається фіксований хедер */
+html,body{overscroll-behavior-y:none}
+
+/* ---------- 4. чому у нас — нова розкладка ---------- */
+.why{grid-template-columns:1fr}
+.why-head{display:grid;gap:20px}
+.why-head h2{max-width:18ch}
+.why-head .btn{justify-self:start}
+.why-grid{display:grid;gap:28px}
+.why-img{margin:0}
+.why-in{display:none}
+@media(min-width:1100px){
+  .why{grid-template-columns:1fr;gap:clamp(40px,4vw,64px)}
+  .why-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+  .why-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,5vw,88px);align-items:center}
+  .why-img{position:relative;top:auto;height:auto;min-height:0;max-height:none;aspect-ratio:4/5}
+  .why-list{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(32px,3.4vw,56px);border-top:0}
+  .why-list div{display:flex;flex-direction:column;gap:16px;padding:30px 0 40px;border-bottom:0;border-top:1px solid var(--line)}
+  .why-list dt{font-size:clamp(44px,4.2vw,68px)}
+  .why-list dd{font-size:16px;max-width:24rem}
+}
+
+/* ---------- 2. сцена байка: стабільна рамка, без стрибків ---------- */
+.frame{aspect-ratio:1400/760;display:grid;place-items:center}
+.frame img{width:100%;height:100%;max-height:none;object-fit:contain}
+
+/* ---------- футер: напис рівно по центру ---------- */
+.wordmark{display:flex;justify-content:center}
+.wordmark span{display:inline-block;font-size:15vw;text-align:center}
+.wordmark span{position:relative;left:-.03em} /* компенсуємо від’ємний трекінг останньої літери */
+.frame{min-height:0}
+.frame img{position:absolute;inset:0}
+.contacts dd{white-space:nowrap}
+@media(max-width:599px){.contacts dd{white-space:normal}}

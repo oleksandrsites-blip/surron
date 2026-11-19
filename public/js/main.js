@@ -4,6 +4,11 @@
   const $ = id => document.getElementById(id);
   const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
 
+  /* ---- стабільна висота екрана: не реагуємо на панелі браузера (Telegram, Safari) ---- */
+  const root = document.documentElement; let lastW = innerWidth;
+  const setH = () => root.style.setProperty('--app-h', innerHeight + 'px');
+  setH(); addEventListener('resize', () => { if (innerWidth !== lastW) { lastW = innerWidth; setH(); } });
+
   /* ---- header ---- */
   const hdr = $('top');
   const onScroll = () => hdr.classList.toggle('solid', scrollY > 40);
@@ -85,6 +90,8 @@
   seg('pay', 'p', v => method = v);
   seg('months', 'n', v => months = +v);
 
+  const pre = {};
+  Object.values(M).forEach(m => { const i = new Image(); i.src = `img/${m.img}.webp`; pre[m.img] = i; });
   function pick(key) {
     if (key === cur) return;
     const b = document.querySelector(`#tabs [data-m="${key}"]`);
@@ -93,20 +100,19 @@
     cur = key; const m = M[key], img = $('bike');
     const SH = 'drop-shadow(0 34px 28px rgba(0,0,0,.55))';
     img.style.opacity = 0; img.style.transform = 'translateX(-50px)'; img.style.filter = `blur(6px) ${SH}`; $('ghost').style.opacity = 0;
-    document.querySelectorAll('.hs').forEach(x => x.setAttribute('aria-expanded', 'false'));
-    setTimeout(() => {
+    const ready = (pre[m.img].decode ? pre[m.img].decode() : Promise.resolve()).catch(() => {});
+    const wait = new Promise(r => setTimeout(r, reduce ? 0 : 320));
+    Promise.all([ready, wait]).then(() => {
       img.src = `img/${m.img}.webp`; img.width = m.w; img.height = m.h; img.alt = `Sur-Ron ${m.n} ${m.y}, вигляд збоку`.replace('  ', ' ');
       $('ghost').textContent = m.n.toUpperCase();
       $('pName').innerHTML = m.n + (m.y ? ` <em>${m.y}</em>` : '');
       $('pSub').textContent = m.sub;
       $('status').innerHTML = m.stock ? '<span class="dot"></span>В наявності у Києві' : '<span class="dot off"></span>Під замовлення';
       ['d1', 'd2', 'd3', 'd4'].forEach((id, i) => $(id).textContent = m.d[i]);
-      ['hs1', 'hs2', 'hs3'].forEach((id, i) => $(id).textContent = m.hs[i]);
       img.style.transition = 'none'; img.style.transform = 'translateX(70px)'; img.style.filter = `blur(8px) ${SH}`; img.offsetWidth; img.style.transition = '';
       img.style.opacity = 1; img.style.transform = 'none'; img.style.filter = SH; $('ghost').style.opacity = 1;
-      $('cap').textContent = 'Натисніть на точку — покажемо деталь'; $('cap').classList.remove('on');
       shown = 0; render(false);
-    }, reduce ? 0 : 300);
+    });
   }
   $('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pick(b.dataset.m); });
   /* стрілки на вкладках */
@@ -118,13 +124,6 @@
   });
   document.querySelectorAll('[data-pick]').forEach(a => a.addEventListener('click', () => pick(a.dataset.pick)));
 
-  document.querySelectorAll('.hs').forEach(h => h.addEventListener('click', () => {
-    const open = h.getAttribute('aria-expanded') !== 'true';
-    document.querySelectorAll('.hs').forEach(x => x.setAttribute('aria-expanded', 'false'));
-    h.setAttribute('aria-expanded', open);
-    $('cap').textContent = open ? h.querySelector('span').textContent : 'Натисніть на точку — покажемо деталь';
-    $('cap').classList.toggle('on', open);
-  }));
   render(false);
 
   /* ---- сцени: скрол перемикає відео й факти ---- */
@@ -159,6 +158,16 @@
     addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
     update();
   }
+
+  /* ---- напис у футері: точно на всю ширину й по центру ---- */
+  const wm = document.querySelector('.wordmark span');
+  const fitWm = () => {
+    if (!wm) return; wm.style.fontSize = '';
+    const fs = parseFloat(getComputedStyle(wm).fontSize), cw = wm.parentElement.clientWidth;
+    wm.style.fontSize = (fs * cw / wm.offsetWidth * .965) + 'px';
+  };
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(fitWm);
+  addEventListener('resize', () => requestAnimationFrame(fitWm));
 
   /* ---- фонове відео фінального блоку: вантажимо й граємо лише у кадрі ---- */
   document.querySelectorAll('.final video[data-src]').forEach(v => {
