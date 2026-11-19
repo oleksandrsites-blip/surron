@@ -146,6 +146,14 @@
     update();
   }
 
+  /* ---- фонове відео фінального блоку: вантажимо й граємо лише у кадрі ---- */
+  document.querySelectorAll('.final video[data-src]').forEach(v => {
+    new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { if (!v.src) { v.src = v.dataset.src; v.load(); } if (!reduce) v.play().catch(() => {}); }
+      else v.pause();
+    }), { rootMargin: '200px 0px' }).observe(v);
+  });
+
   /* ---- форма заявки ---- */
   const sheet = $('sheet'), form = $('leadForm');
   function summary() {
@@ -155,10 +163,15 @@
       : isInst() ? `${PAY_NAME[method]} · ${months} × ${fmt(c.to)} ₴` : `${PAY_NAME[method]} · ${fmt(c.to)} ₴`;
     return { name, pay, img: m.img, w: m.w, h: m.h };
   }
+  let reqType = 'Покупка';
   document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => {
-    const s = summary();
-    $('oName').textContent = s.name;
-    $('oPay').innerHTML = s.pay.replace(/([\d ]+ ₴)$/, '<em>$1</em>');
+    const s = summary(), test = b.dataset.open === 'test';
+    reqType = test ? 'Тест-драйв' : 'Покупка';
+    $('sheetTitle').textContent = test ? 'Запис на тест-драйв' : 'Заявка на байк';
+    $('oName').textContent = test ? `Тест-драйв: ${s.name}` : s.name;
+    if (test) $('oPay').textContent = 'Київ, вул. Старонаводницька, 4';
+    else $('oPay').innerHTML = s.pay.replace(/([\d ]+ ₴)$/, '<em>$1</em>');
+    $('eSend').textContent = '';
     $('oImg').src = `img/${s.img}.webp`; $('oImg').width = s.w; $('oImg').height = s.h;
     sheet.classList.remove('sent'); sheet.showModal();
   }));
@@ -176,7 +189,15 @@
     const okN = check(n, $('eName'), n.value.trim().length >= 2, 'Вкажіть ім\'я — щоб знати, як до вас звертатись');
     const okP = check(p, $('ePhone'), p.value.replace(/\D/g, '').length >= 10, 'Перевірте номер: потрібно щонайменше 10 цифр');
     if (!okN) { n.focus(); return; } if (!okP) { p.focus(); return; }
-    /* TODO (Фаза 6): POST /api/lead → Telegram менеджеру; зараз — лише демо-стан */
-    sheet.classList.add('sent'); form.reset();
+    const btn = $('sendBtn'), s = summary(), fd = new FormData(form);
+    btn.disabled = true; btn.textContent = 'Надсилаємо…'; $('eSend').textContent = '';
+    fetch('/api/lead', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: n.value, phone: p.value, via: fd.get('way'), company: fd.get('company'),
+        type: reqType, model: s.name, payment: reqType === 'Покупка' ? s.pay : '' })
+    }).then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => { if (!d.ok) throw 0; sheet.classList.add('sent'); form.reset(); })
+      .catch(() => { $('eSend').textContent = 'Не вдалося надіслати. Подзвоніть нам: +38 050 695 52 99'; })
+      .finally(() => { btn.disabled = false; btn.textContent = 'Надіслати заявку — передзвонимо'; });
   });
 })();

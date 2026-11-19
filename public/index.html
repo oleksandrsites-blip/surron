@@ -6,6 +6,12 @@
 <title>Sur-Ron у Києві — офіційний дилер | Sur-Ron Ukraine</title>
 <meta name="description" content="Офіційний дилер Sur-Ron у Києві з 2021 року. Light Bee X, Hyper Bee, Ultra Bee — оригінал з заводу, сервіс і запчастини. Фінальна ціна з оплатою частинами — одразу на сайті.">
 <meta name="theme-color" content="#141414">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:title" content="Sur-Ron у Києві — офіційний дилер">
+<meta property="og:description" content="Light Bee X, Hyper Bee, Ultra Bee. Оригінал з заводу, сервіс і запчастини. Ціна з оплатою частинами — одразу на сайті.">
+<meta property="og:image" content="img/og.jpg">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600&family=Onest:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -177,8 +183,30 @@
   </div>
 </section>
 
-<section id="visit" class="sec" aria-label="Тест-драйв і контакти — наступна ітерація" style="min-height:30vh"></section>
+<!-- ========== 6. ТЕСТ-ДРАЙВ + КОНТАКТИ ========== -->
+<section class="final" id="visit" aria-labelledby="fTitle">
+  <video muted loop playsinline preload="none" data-src="media/night.mp4" aria-hidden="true"></video>
+  <div class="final-in">
+    <h2 id="fTitle" class="rv">Сядьте за кермо<br><b>до покупки.</b></h2>
+    <p class="rv" style="--d:1">Приїжджайте на тест-драйв у Києві: покажемо моделі вживу, порахуємо оплату й розкажемо про сервіс.</p>
+    <div class="actions rv" style="--d:2">
+      <button class="btn btn-main" data-open="test">Записатись на тест-драйв</button>
+      <a class="btn btn-ghost" href="tel:+380506955299">Подзвонити</a>
+    </div>
+    <dl class="contacts rv" style="--d:3">
+      <div><dt>Адреса</dt><dd><a href="https://www.google.com/maps/search/?api=1&amp;query=%D0%9A%D0%B8%D1%97%D0%B2%2C+%D0%A1%D1%82%D0%B0%D1%80%D0%BE%D0%BD%D0%B0%D0%B2%D0%BE%D0%B4%D0%BD%D0%B8%D1%86%D1%8C%D0%BA%D0%B0+4" target="_blank" rel="noopener">Київ, вул. Старонаводницька, 4</a></dd></div>
+      <div><dt>Телефон</dt><dd><a href="tel:+380506955299">+38 050 695 52 99</a></dd></div>
+      <div><dt>Пошта</dt><dd><a href="mailto:surronkievua@gmail.com">surronkievua@gmail.com</a></dd></div>
+      <div><dt>Instagram</dt><dd><a href="https://www.instagram.com/surronukraine/" target="_blank" rel="noopener">@surronukraine</a></dd></div>
+    </dl>
+  </div>
+</section>
 </main>
+
+<footer class="foot">
+  <span>© 2026 Sur-Ron Ukraine · офіційний дилер Sur-Ron у Києві</span>
+  <nav aria-label="Посилання у футері"><a href="#models">Моделі й ціни</a><a href="#faq">Питання</a><a href="#visit">Контакти</a><a href="https://www.instagram.com/surronukraine/" target="_blank" rel="noopener">Instagram</a></nav>
+</footer>
 
 <!-- ========== ФОРМА ЗАЯВКИ ========== -->
 <dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
@@ -210,7 +238,9 @@
         <label><input type="radio" name="way" value="Viber">Viber</label>
       </div>
     </div>
-    <button class="btn btn-main" type="submit">Надіслати заявку — передзвонимо</button>
+    <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" class="sr">
+    <button class="btn btn-main" type="submit" id="sendBtn">Надіслати заявку — передзвонимо</button>
+    <p class="err" id="eSend" role="alert"></p>
     <p class="fine">Без передоплати. Менеджер підтвердить наявність, суму й умови оплати.</p>
   </form>
   <div class="done" role="status">
