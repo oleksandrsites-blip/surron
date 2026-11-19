@@ -113,6 +113,39 @@
   }));
   render(false);
 
+  /* ---- сцени: скрол перемикає відео й факти ---- */
+  const sc = $('ride');
+  if (sc) {
+    const vids = [...sc.querySelectorAll('video')], items = [...sc.querySelectorAll('.sc-list li')],
+      bars = [...sc.querySelectorAll('.sc-bars b')];
+    let idx = 0, loaded = false, visible = false, ticking = false;
+    const load = () => {
+      if (loaded) return; loaded = true;
+      vids.forEach(v => { v.preload = reduce ? 'metadata' : 'auto'; v.src = v.dataset.src; v.load(); });
+    };
+    const playActive = () => vids.forEach((v, i) => {
+      if (i === idx && visible && !reduce) v.play().catch(() => {}); else v.pause();
+    });
+    new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) load();
+    }), { rootMargin: '100% 0px' }).observe(sc);
+    new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; playActive(); })).observe(sc);
+    const update = () => {
+      ticking = false;
+      const r = sc.getBoundingClientRect(), total = sc.offsetHeight - innerHeight;
+      const p = Math.min(Math.max(-r.top / total, 0), .9999), n = Math.floor(p * 4), sub = p * 4 - n;
+      bars.forEach((b, i) => b.style.width = (i < n ? 100 : i === n ? sub * 100 : 0) + '%');
+      if (n !== idx) {
+        idx = n;
+        vids.forEach((v, i) => v.classList.toggle('on', i === n));
+        items.forEach((li, i) => li.classList.toggle('on', i === n));
+        playActive();
+      }
+    };
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
+
   /* ---- форма заявки ---- */
   const sheet = $('sheet'), form = $('leadForm');
   function summary() {
