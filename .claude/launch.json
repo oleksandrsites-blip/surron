@@ -1,6 +1,27 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "surron", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8080", "--directory", "public"], "port": 8080 }
+    {
+      "name": "surron",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8080",
+        "--directory",
+        "public"
+      ],
+      "port": 8080
+    },
+    {
+      "name": "docs",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8081"
+      ],
+      "port": 8081
+    }
   ]
 }
